@@ -1,12 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppRouter from "components/Router";
 import { authService } from "firebasefile";
 
 function App() {
-  const [isLoggendIn, setIsLoggendIn] = useState(authService.currentUser);
+  const [init, setInit] = useState(false);
+  const [isLoggendIn, setIsLoggendIn] = useState(false);
+  useEffect(() => {
+    authService.onAuthStateChanged((user) => {
+      if (user) {
+        setIsLoggendIn(true);
+      } else {
+        setIsLoggendIn(false);
+      }
+      setInit(true);
+    });
+  }, [])
   return (
     <>
-      <AppRouter isLoggendIn={isLoggendIn} />
+      {init ? <AppRouter isLoggendIn={isLoggendIn} /> : "Initializing..."}
       <footer>&copy; {new Date().getFullYear()} SNS app</footer>
     </>
   );
