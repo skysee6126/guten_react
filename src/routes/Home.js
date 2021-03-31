@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { dbService } from "firebasefile";
+import Nweet from "components/Nweet";
 
 const Home = ({ userOjt }) => {
     const [text, setText] = useState("");
@@ -35,11 +36,11 @@ const Home = ({ userOjt }) => {
             <input value={text} onChange={onChange} type="text" placeholder="write here" maxLength={200} />
             <input type="submit" value="Submit" />
         </form>
-        {texts.map(text => (
-            <div key={text.id}>
-                <h4>{text.text}</h4>
-            </div>
-        ))}
+        <div>
+            {texts.map((nweet) => (
+                <Nweet key={nweet.id} nweetObj={nweet} isOwner={nweet.creatorId === userOjt.uid} />
+            ))}
+        </div>
     </div>
     );
 };
