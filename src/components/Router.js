@@ -1,38 +1,38 @@
-import React from "react";
-import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom";
-import Auth from "../routes/Auth";
-import Home from "../routes/Home";
-import { onLogOutClick } from "routes/Profile";
+import React, { useState } from "react";
+import {
+    HashRouter as Router,
+    Route,
+    Switch,
+    Redirect,
+} from "react-router-dom";
+import Auth from "routes/Auth";
+import Home from "routes/Home";
+import Profile from "routes/Profile";
 import Navigation from "components/Navigation";
-import App from "./App";
 
-
-const AppRouter = ({ isLoggendIn, userObj }) => {
+const AppRouter = ({ isLoggedIn }) => {
     return (
-        < Router >
-            {isLoggendIn && <Navigation />}
+        <Router>
+            {isLoggedIn && <Navigation />}
             <Switch>
-                {isLoggendIn ? (
+                {isLoggedIn ? (
                     <>
                         <Route exact path="/">
-                            <Home userObj={userObj} />
+                            <Home />
                         </Route>
-                        <Route exact path="/profile/">
-                            <profile />
+                        <Route exact path="/profile">
+                            <Profile />
                         </Route>
-                        <Redirect from="*" to="/" />
                     </>
                 ) : (
                     <>
                         <Route exact path="/">
                             <Auth />
                         </Route>
-                        <Redirect from="*" to="/" />
                     </>
                 )}
             </Switch>
-        </Router >
+        </Router>
     );
 };
-
 export default AppRouter;

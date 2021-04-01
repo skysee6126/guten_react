@@ -1,47 +1,68 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { dbService } from "firebasefile";
 import Nweet from "components/Nweet";
 
-const Home = ({ userOjt }) => {
-    const [text, setText] = useState("");
-    const [texts, setTexts] = useState([]);
+const Home = ({ userObj }) => {
+    const [nweet, setNweet] = useState("");
+    const [nweets, setNweets] = useState([]);
     useEffect(() => {
-        dbService.collection("texts").onSnapshot(snapshot => {
-            const textArray = snapshot.docs.map((doc) => ({
+        dbService.collection("nweets").onSnapshot((snapshot) => {
+            const nweetArray = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
-
             }));
-            setTexts(textArray);
-        })
+            setNweets(nweetArray);
+        });
     }, []);
     const onSubmit = async (event) => {
         event.preventDefault();
-        await dbService.collection("sns_app").add({
-            text,
+        await dbService.collection("nweets").add({
+            text: nweet,
             createdAt: Date.now(),
-            // creatorId: userOjt.uid,
+            creatorId: userObj.uid,
         });
-        setText("");
+        setNweet("");
     };
     const onChange = (event) => {
         const {
             target: { value },
         } = event;
-        setText(value);
+        setNweet(value);
     };
-
-    return (<div>
-        <form onSubmit={onSubmit}>
-            <input value={text} onChange={onChange} type="text" placeholder="write here" maxLength={200} />
-            <input type="submit" value="Submit" />
-        </form>
+    const onFileChange = (event) => {
+        const {
+            target: { files },
+        } = event;
+        const theFile = files[0];
+        const reader = new FileReader();
+        reader.onloadend = (finishedEvent) => {
+            console.log(finishedEvent);
+        };
+        reader.readAsDataURL(theFile);
+    };
+    return (
         <div>
-            {texts.map((nweet) => (
-                <Nweet key={nweet.id} nweetObj={nweet} isOwner={nweet.creatorId === userOjt.uid} />
-            ))}
+            <form onSubmit={onSubmit}>
+                <input
+                    value={nweet}
+                    onChange={onChange}
+                    type="text"
+                    placeholder="What's on your mind?"
+                    maxLength={120}
+                />
+                <input type="file" accept="image/*" onChange={onFileChange} />
+                <input type="submit" value="Nweet" />
+            </form>
+            <div>
+                {nweets.map((nweet) => (
+                    <Nweet
+                        key={nweet.id}
+                        nweetObj={nweet}
+                        isOwner={nweet.creatorId === userObj.uid}
+                    />
+                ))}
+            </div>
         </div>
-    </div>
     );
 };
 export default Home;

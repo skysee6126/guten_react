@@ -1,11 +1,16 @@
 import React from "react";
 import { authService } from "firebasefile";
+import { useHistory } from "react-router-dom";
 
 export default () => {
-    const onLogOutClick = () => authService.signOut();
+    const history = useHistory();
+    const onLogOutClick = () => {
+        authService.signOut();
+        history.push("/");
+    };
     return (
         <>
-            <button onClick={onLogOutClick}>Log out</button>
+            <button onClick={onLogOutClick}>Log Out</button>
         </>
     );
 };

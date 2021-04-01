@@ -1,56 +1,58 @@
-import { dbService } from 'firebasefile';
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { dbService } from "firebasefile";
 
 const Nweet = ({ nweetObj, isOwner }) => {
   const [editing, setEditing] = useState(false);
-  const [newNeet, setNewNeet] = useState(nweetObj.text);
+  const [newNweet, setNewNweet] = useState(nweetObj.text);
   const onDeleteClick = async () => {
-    const ok = window.confirm("Are you sure you want to delete this text?");
+    const ok = window.confirm("Are you sure you want to delete this nweet?");
     if (ok) {
-      await dbService.doc(`sns_app/${nweetObj.id}`).delete();
+      await dbService.doc(`nweets/${nweetObj.id}`).delete();
     }
   };
   const toggleEditing = () => setEditing((prev) => !prev);
   const onSubmit = async (event) => {
     event.preventDefault();
-    await dbService.doc(`sns_app/${nweetObj.id}`).update({
-      text: newNeet,
-    })
+    await dbService.doc(`nweets/${nweetObj.id}`).update({
+      text: newNweet,
+    });
     setEditing(false);
   };
   const onChange = (event) => {
-    const { target: { value },
+    const {
+      target: { value },
     } = event;
-    setNewNeet(value)
+    setNewNweet(value);
   };
   return (
     <div>
-      {
-        editing ?
-          (
+      {editing ? (
+        <>
+          <form onSubmit={onSubmit}>
+            <input
+              type="text"
+              placeholder="Edit your nweet"
+              value={newNweet}
+              required
+              onChange={onChange}
+            />
+            <input type="submit" value="Update Nweet" />
+          </form>
+          <button onClick={toggleEditing}>Cancel</button>
+        </>
+      ) : (
+        <>
+          <h4>{nweetObj.text}</h4>
+          {isOwner && (
             <>
-              <form onSubmit={onSubmit}>
-                <input type="text" value={newNeet} required onChange={onChange} />
-                <input type="submit" value="update" />
-              </form>
-              <button onClick={toggleEditing}>Cancel</button>
+              <button onClick={onDeleteClick}>Delete Nweet</button>
+              <button onClick={toggleEditing}>Edit Nweet</button>
             </>
-          ) : (
-            <>      <h4>{nweetObj.text}</h4>
-              {isOwner && (
-                <>
-                  <button onClick={onDeleteClick}>Delete</button>
-                  <button onClick={toggleEditing}>Edit</button>
-                </>
-              )}
-
-            </>
-          )
-
-      }
+          )}
+        </>
+      )}
     </div>
   );
 };
-
 
 export default Nweet;
